@@ -443,6 +443,38 @@ paths:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
 
+  /notifications/{id}:
+    delete:
+      operationId: deleteNotification
+      tags: [notifications]
+      summary: Delete a single notification
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /notifications/all:
+    delete:
+      operationId: deleteAllNotifications
+      tags: [notifications]
+      summary: Delete all notifications for current user
+      responses:
+        "200":
+          description: All deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
   /admin/users:
     get:
       operationId: adminGetUsers

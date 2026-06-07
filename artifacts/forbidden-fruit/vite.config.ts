@@ -38,6 +38,21 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    target: "es2020",
+    cssCodeSplit: true,
+    reportCompressedSize: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "react-vendor": ["react", "react-dom"],
+          "query-vendor": ["@tanstack/react-query"],
+          "motion-vendor": ["framer-motion"],
+          "icons-vendor": ["lucide-react"],
+          "charts-vendor": ["recharts"],
+          "router-vendor": ["wouter"],
+        },
+      },
+    },
   },
   server: {
     port,

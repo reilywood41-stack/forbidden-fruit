@@ -412,6 +412,28 @@ export const MarkNotificationReadResponse = zod.object({
 
 
 /**
+ * @summary Delete a single notification
+ */
+export const DeleteNotificationParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteNotificationResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().optional()
+})
+
+
+/**
+ * @summary Delete all notifications for current user
+ */
+export const DeleteAllNotificationsResponse = zod.object({
+  "success": zod.boolean(),
+  "message": zod.string().optional()
+})
+
+
+/**
  * @summary Get all users
  */
 export const AdminGetUsersQueryParams = zod.object({

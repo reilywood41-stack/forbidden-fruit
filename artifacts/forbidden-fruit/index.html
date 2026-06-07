@@ -2,18 +2,94 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>Forbidden Fruit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5" />
+
+    <!-- Primary SEO -->
+    <title>Forbidden Fruit — Elite Members-Only Adult Content Platform</title>
+    <meta name="description" content="Join Forbidden Fruit — an exclusive members-only platform with Bronze, Silver & Gold tiers. Unlock premium adult content, private video calls, direct messages with models, and more." />
+    <meta name="keywords" content="forbidden fruit, adult content, exclusive membership, premium content, private calls, VIP membership" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://forbiddenfruit.app/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://forbiddenfruit.app/" />
+    <meta property="og:title" content="Forbidden Fruit — Elite Members-Only Platform" />
+    <meta property="og:description" content="An exclusive sanctuary for premium adult content. Choose your tier, unlock your desires." />
+    <meta property="og:image" content="https://forbiddenfruit.app/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Forbidden Fruit" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://forbiddenfruit.app/" />
+    <meta name="twitter:title" content="Forbidden Fruit — Elite Members-Only Platform" />
+    <meta name="twitter:description" content="An exclusive sanctuary for premium adult content. Choose your tier, unlock your desires." />
+    <meta name="twitter:image" content="https://forbiddenfruit.app/og-image.jpg" />
+
+    <!-- Theme -->
+    <meta name="theme-color" content="#dc143c" />
+    <meta name="color-scheme" content="dark" />
+
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <!-- Speed: warm up connection to Render API before JS loads -->
-    <link rel="preconnect" href="https://forbidden-fruit-api.onrender.com" crossorigin />
-    <link rel="dns-prefetch" href="https://forbidden-fruit-api.onrender.com" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Preconnect: warm up external origins before JS loads -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Fonts: Inter (body) + Playfair Display (headings) — display=swap avoids FOIT -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&display=swap" />
+    </noscript>
+
+    <!-- Critical above-the-fold styles: dark background while JS loads -->
+    <style>
+      *,::before,::after{box-sizing:border-box}
+      html,body{margin:0;padding:0;background:#080808;color:#fff;font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+      #root{min-height:100vh}
+      #initial-loader{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#080808;z-index:9999;transition:opacity .4s}
+      #initial-loader.hidden{opacity:0;pointer-events:none}
+      .il-logo{font-size:22px;font-weight:900;letter-spacing:3px;color:#fff}
+      .il-logo span{color:#dc143c}
+      .il-bar{width:48px;height:3px;background:linear-gradient(90deg,#dc143c,#ff4466);border-radius:2px;margin:14px auto 0;animation:il-pulse 1.2s ease-in-out infinite}
+      @keyframes il-pulse{0%,100%{opacity:.3;transform:scaleX(.6)}50%{opacity:1;transform:scaleX(1)}}
+    </style>
   </head>
   <body>
+    <!-- Inline loader: shown instantly, hidden once React mounts -->
+    <div id="initial-loader" aria-hidden="true">
+      <div style="text-align:center">
+        <div class="il-logo">FORBIDDEN<span> FRUIT</span></div>
+        <div class="il-bar"></div>
+      </div>
+    </div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Hide the loader as soon as React has hydrated the root
+      document.addEventListener('DOMContentLoaded', function() {
+        var root = document.getElementById('root');
+        var loader = document.getElementById('initial-loader');
+        if (!root || !loader) return;
+        var observer = new MutationObserver(function() {
+          if (root.children.length > 0) {
+            loader.classList.add('hidden');
+            setTimeout(function(){ loader.remove(); }, 500);
+            observer.disconnect();
+          }
+        });
+        observer.observe(root, { childList: true });
+      });
+    </script>
   </body>
 </html>

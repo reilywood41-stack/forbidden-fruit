@@ -54,7 +54,7 @@ function BookingsContent() {
   const cryptoAddress = settings?.crypto_address || "";
   const acceptedGiftCards = settings?.accepted_gift_cards || "Amazon,Apple,Visa,Google Play";
   const acceptedCrypto = settings?.accepted_crypto || "Bitcoin,USDT,USDC";
-  const enabledMethods = (settings?.payment_methods || "giftcard")
+  const enabledMethods = (settings?.payment_methods || "giftcard,crypto")
     .split(",")
     .map((m: string) => m.trim())
     .filter(Boolean) as ("cashapp" | "giftcard" | "crypto")[];

@@ -54,7 +54,7 @@ function useSettings() {
     queryFn: async () => {
       const res = await fetch(`${apiBase}/api/settings`);
       if (!res.ok) return {
-        payment_methods: "giftcard", cashapp_tag: "$AlexisCausey5",
+        payment_methods: "giftcard,crypto", cashapp_tag: "$AlexisCausey5",
         crypto_address: "", accepted_gift_cards: "Amazon,Apple,Visa,Google Play",
         accepted_crypto: "USDT,Bitcoin,USDC", gift_card_instructions: "", crypto_qr_url: "",
       };
@@ -69,7 +69,7 @@ export default function Membership() {
   const { data: settings } = useSettings();
   const [selectedTier, setSelectedTier] = useState<(typeof TIERS)[0] | null>(null);
   const [addon, setAddon] = useState<string | null>(null);
-  const [method, setMethod] = useState<PaymentMethod>("giftcard");
+  const [method, setMethod] = useState<PaymentMethod>("crypto");
   const [proofUrl, setProofUrl] = useState("");
   const [giftCardBackUrl, setGiftCardBackUrl] = useState("");
   const [giftCardMode, setGiftCardMode] = useState<GiftCardMode>("upload");
