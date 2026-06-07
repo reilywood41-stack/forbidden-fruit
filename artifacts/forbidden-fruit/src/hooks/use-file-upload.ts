@@ -11,6 +11,8 @@ interface UseFileUploadReturn {
   reset: () => void;
 }
 
+const MAX_SIZE_MB = 10;
+
 export function useFileUpload(): UseFileUploadReturn {
   const [state, setState] = useState<UploadState>("idle");
   const [progress, setProgress] = useState(0);
@@ -24,59 +26,27 @@ export function useFileUpload(): UseFileUploadReturn {
 
   const upload = useCallback(async (file: File): Promise<string | null> => {
     setState("uploading");
-    setProgress(0);
+    setProgress(10);
     setError(null);
 
     try {
-      const apiBase = (import.meta.env.VITE_API_URL as string) || "";
-
-      const requestRes = await fetch(`${apiBase}/api/uploads/request-url`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: file.name,
-          size: file.size,
-          contentType: file.type || "application/octet-stream",
-        }),
-      });
-
-      if (!requestRes.ok) {
-        throw new Error("Failed to get upload URL");
+      if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+        throw new Error(`File is too large. Maximum size is ${MAX_SIZE_MB}MB.`);
       }
 
-      const { uploadURL, objectPath } = await requestRes.json() as {
-        uploadURL: string;
-        objectPath: string;
-      };
-
-      await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-
-        xhr.upload.addEventListener("progress", (e) => {
-          if (e.lengthComputable) {
-            setProgress(Math.round((e.loaded / e.total) * 100));
-          }
-        });
-
-        xhr.addEventListener("load", () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            resolve();
-          } else {
-            reject(new Error(`Upload failed with status ${xhr.status}`));
-          }
-        });
-
-        xhr.addEventListener("error", () => reject(new Error("Network error during upload")));
-        xhr.addEventListener("abort", () => reject(new Error("Upload cancelled")));
-
-        xhr.open("PUT", uploadURL);
-        xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
-        xhr.send(file);
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setProgress(70);
+          resolve(reader.result as string);
+        };
+        reader.onerror = () => reject(new Error("Failed to read file"));
+        reader.readAsDataURL(file);
       });
 
       setProgress(100);
       setState("done");
-      return objectPath;
+      return dataUrl;
     } catch (err) {
       const message = err instanceof Error ? err.message : "Upload failed";
       setError(message);
