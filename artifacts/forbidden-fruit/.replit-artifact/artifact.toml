@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Forbidden Fruit"
+version = "1.0.0"
+id = "artifacts/forbidden-fruit"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23906
+
+[services.development]
+run = "pnpm --filter @workspace/forbidden-fruit run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/forbidden-fruit", "run", "build" ]
+publicDir = "artifacts/forbidden-fruit/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23906"
+BASE_PATH = "/"
