@@ -31,6 +31,11 @@ app.use(cors());
 app.use(express.json({ limit: "15mb" }));
 app.use(express.urlencoded({ extended: true, limit: "15mb" }));
 
+// Lightweight health/ping endpoint — used by UptimeRobot to keep Render awake
+app.get("/api/ping", (_req, res) => {
+  res.json({ ok: true, ts: Date.now() });
+});
+
 app.use("/api", router);
 
 export default app;
