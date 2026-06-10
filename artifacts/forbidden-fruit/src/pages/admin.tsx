@@ -678,7 +678,7 @@ function ContentForm({
 
 /* ─── Content ────────────────────────────────────────────────── */
 function ContentTab() {
-  const { data, refetch } = useAdminGetContent();
+  const { data, refetch, isLoading } = useAdminGetContent();
   const { data: modelsData } = useGetModels();
   const create = useAdminCreateContent({ mutation: { onSuccess: () => { refetch(); setShowForm(false); toast({ title: "Content created!" }); } } });
   const updateContent = useAdminUpdateContent({ mutation: { onSuccess: () => { refetch(); setEditingContent(null); toast({ title: "Content updated!" }); } } });
@@ -721,6 +721,20 @@ function ContentTab() {
       </AnimatePresence>
 
       {/* Content grid */}
+      {isLoading ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div key={i} className="glass-panel rounded-xl overflow-hidden animate-pulse">
+              <div className="aspect-[4/3] bg-white/5" />
+              <div className="p-2.5 space-y-2">
+                <div className="h-2.5 w-3/4 bg-white/5 rounded" />
+                <div className="h-2 w-1/3 bg-white/5 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+      <>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {data?.items.map(c => (
           <div key={c.id} className="glass-panel rounded-xl overflow-hidden relative flex flex-col">
@@ -810,6 +824,8 @@ function ContentTab() {
           <Video className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-50" />
           <p className="text-muted-foreground">No content yet. Add your first piece.</p>
         </div>
+      )}
+      </>
       )}
     </div>
   );
@@ -944,7 +960,7 @@ function PostsTab() {
   const [isPinned, setIsPinned] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
 
-  const { data: postsData, refetch } = useQuery({
+  const { data: postsData, refetch, isLoading: postsLoading } = useQuery({
     queryKey: ["/api/admin/posts"],
     queryFn: async () => {
       const token = localStorage.getItem("token");
@@ -1081,7 +1097,20 @@ function PostsTab() {
       )}
 
       <div className="space-y-3">
-        {!postsData?.posts?.length ? (
+        {postsLoading ? (
+          <>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="glass-panel rounded-xl p-4 flex items-start gap-4 animate-pulse">
+                <div className="w-16 h-16 rounded-lg bg-white/5 shrink-0" />
+                <div className="flex-1 space-y-2 py-1">
+                  <div className="h-3 w-1/4 bg-white/5 rounded" />
+                  <div className="h-2.5 w-3/4 bg-white/5 rounded" />
+                  <div className="h-2.5 w-1/2 bg-white/5 rounded" />
+                </div>
+              </div>
+            ))}
+          </>
+        ) : !postsData?.posts?.length ? (
           <div className="glass-panel rounded-2xl p-12 text-center">
             <ImageIcon className="w-10 h-10 mx-auto mb-3 text-primary/20" />
             <p className="text-muted-foreground">No posts yet. Create your first post above.</p>
@@ -1114,7 +1143,7 @@ function PostsTab() {
 }
 
 function ModelsTab() {
-  const { data, refetch } = useGetModels();
+  const { data, refetch, isLoading } = useGetModels();
   const { toast } = useToast();
   const [showCreate, setShowCreate] = useState(false);
   const [editingModel, setEditingModel] = useState<any | null>(null);
@@ -1168,6 +1197,20 @@ function ModelsTab() {
         )}
       </AnimatePresence>
 
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="glass-panel rounded-xl p-4 flex gap-4 animate-pulse">
+              <div className="w-14 h-14 rounded-full bg-white/5 shrink-0" />
+              <div className="flex-1 space-y-2 py-1">
+                <div className="h-3 w-2/3 bg-white/5 rounded" />
+                <div className="h-2.5 w-1/3 bg-white/5 rounded" />
+                <div className="h-2.5 w-1/2 bg-white/5 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {data?.models.map((m: any) => (
           <div key={m.id} className="glass-panel rounded-xl p-4 flex gap-4 relative group">
@@ -1245,6 +1288,7 @@ function ModelsTab() {
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }

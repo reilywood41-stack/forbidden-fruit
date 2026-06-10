@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "wouter";
 import { ProtectedRoute, useAuth } from "@/lib/auth";
 import { SEOHead } from "@/components/seo-head";
@@ -6,8 +6,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Heart, Lock, Play, Crown, Rss, User, Pin,
   Image as ImageIcon, Video as VideoIcon,
+  Edit2, X, Trash2, Loader2, Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const apiBase = (import.meta.env.VITE_API_URL as string) || "";
 
@@ -179,8 +181,149 @@ function MediaGrid({ urls, mediaType, isLocked }: { urls: string[]; mediaType: s
   );
 }
 
-function PostCard({ post }: { post: Post }) {
+const TIER_OPTIONS = [
+  { value: "free", label: "Everyone (Free)" },
+  { value: "bronze", label: "Bronze members+" },
+  { value: "silver", label: "Silver members+" },
+  { value: "gold", label: "Gold members only" },
+];
+
+function PostEditModal({ post, onClose, onSaved }: { post: Post; onClose: () => void; onSaved: () => void }) {
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [caption, setCaption] = useState(post.caption ?? "");
+  const [tier, setTier] = useState(post.tier);
+  const [mediaUrls, setMediaUrls] = useState<string[]>([...post.mediaUrls]);
+
+  const save = useMutation({
+    mutationFn: async () => {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${apiBase}/api/admin/posts/${post.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ caption, tier, mediaUrls, mediaType: post.mediaType, isPinned: post.isPinned }),
+      });
+      if (!res.ok) throw new Error("Failed to update post");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Post updated!" });
+      onSaved();
+      onClose();
+    },
+    onError: () => toast({ title: "Failed to save post", variant: "destructive" }),
+  });
+
+  const addImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      toast({ title: "Image too large", description: "Max size is 10MB", variant: "destructive" });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setMediaUrls((prev) => [...prev, reader.result as string]);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const inputClass = "w-full bg-card/60 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary";
+
   return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="w-full max-w-lg bg-[#1a0a0a] border border-white/10 rounded-2xl shadow-2xl overflow-y-auto max-h-[90vh]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-white/10">
+          <h3 className="font-bold text-white text-lg">Edit Post</h3>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-muted-foreground hover:text-white transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-5 space-y-4">
+          <div>
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 block">Caption</label>
+            <textarea
+              value={caption}
+              onChange={(e) => setCaption(e.target.value)}
+              rows={3}
+              placeholder="Write a caption..."
+              className={`${inputClass} resize-none`}
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 block">Visible to</label>
+            <select value={tier} onChange={(e) => setTier(e.target.value)} className={inputClass}>
+              {TIER_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </div>
+
+          {post.mediaType === "image" && (
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 block">
+                Images ({mediaUrls.length})
+              </label>
+              {mediaUrls.length > 0 && (
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  {mediaUrls.map((url, idx) => (
+                    <div key={idx} className="relative aspect-square group">
+                      <img src={url} alt="" className="w-full h-full object-cover rounded-lg border border-white/10" />
+                      <button
+                        onClick={() => setMediaUrls((prev) => prev.filter((_, i) => i !== idx))}
+                        className="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={addImage} />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-white/20 text-sm text-muted-foreground hover:border-primary/50 hover:text-white transition-colors w-full justify-center"
+              >
+                <Plus className="w-4 h-4" /> Add Image
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-3 px-5 pb-5">
+          <Button
+            onClick={() => save.mutate()}
+            disabled={save.isPending}
+            className="flex-1 crimson-gradient-bg border-0 gap-2"
+          >
+            {save.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+            Save Changes
+          </Button>
+          <Button variant="outline" onClick={onClose} className="flex-1">Cancel</Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PostCard({ post, isAdmin }: { post: Post; isAdmin?: boolean }) {
+  const [editing, setEditing] = useState(false);
+  const queryClient = useQueryClient();
+  return (
+    <>
+    {editing && (
+      <PostEditModal
+        post={post}
+        onClose={() => setEditing(false)}
+        onSaved={() => queryClient.invalidateQueries({ queryKey: ["/api/posts"] })}
+      />
+    )}
     <div className={`glass-panel rounded-2xl overflow-hidden transition-all ${post.isPinned ? "border-primary/30" : ""}`}>
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3">
@@ -235,8 +378,17 @@ function PostCard({ post }: { post: Post }) {
             </Button>
           </Link>
         )}
+        {isAdmin && !post.isLocked && (
+          <button
+            onClick={() => setEditing(true)}
+            className="ml-auto flex items-center gap-1.5 text-xs text-muted-foreground hover:text-white transition-colors px-2.5 py-1.5 rounded-lg hover:bg-white/5"
+          >
+            <Edit2 className="w-3.5 h-3.5" /> Edit
+          </button>
+        )}
       </div>
     </div>
+    </>
   );
 }
 
@@ -306,7 +458,7 @@ export default function PostsFeed() {
           </div>
         ) : (
           <div className="space-y-4">
-            {data?.posts.map((post) => <PostCard key={post.id} post={post} />)}
+            {data?.posts.map((post) => <PostCard key={post.id} post={post} isAdmin={user?.isAdmin} />)}
           </div>
         )}
 
