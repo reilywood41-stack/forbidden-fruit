@@ -86,6 +86,7 @@ export default function Landing() {
         description="An elite members-only adult content platform. Choose Bronze ($10), Silver ($30), or Gold ($50) — unlock exclusive HD videos, private model video calls, and direct messaging."
         jsonLd={[ORG_SCHEMA, WEBSITE_SCHEMA, FAQ_SCHEMA]}
       />
+      <meta name="google-site-verification" content="KPW9hfZXcdr0qSqMPKGRrx4IT-HSR9RCW0XUuurgAIA" />
       {/* Hero Section */}
       <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
