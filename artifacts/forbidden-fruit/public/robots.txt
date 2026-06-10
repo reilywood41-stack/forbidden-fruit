@@ -1,6 +1,17 @@
 User-agent: *
 Allow: /
+Allow: /membership
+Allow: /models/
 Disallow: /admin
 Disallow: /api/
+Disallow: /content
+Disallow: /profile
+Disallow: /notifications
+Disallow: /referrals
+Disallow: /bookings
+Disallow: /dms
+Disallow: /posts
+Disallow: /login
+Disallow: /register
 
 Sitemap: https://forbiddenfruit.app/sitemap.xml

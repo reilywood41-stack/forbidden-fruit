@@ -3,6 +3,7 @@ import { useGetModels, useGetContent } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
 import { Crown, Video, Image as ImageIcon, PhoneCall, ArrowLeft, Clock, Star, Lock, PlayCircle, Heart, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SEOHead } from "@/components/seo-head";
 
 const TIER_ORDER: Record<string, number> = { none: 0, free: 0, bronze: 1, silver: 2, gold: 3 };
 const CONTENT_TIER_ORDER: Record<string, number> = { free: 0, bronze: 1, silver: 2, gold: 3 };
@@ -57,9 +58,31 @@ export default function ModelProfile() {
   const imageCount = modelContent.filter((c: any) => c.type !== "video").length;
   const totalViews = modelContent.reduce((sum: number, c: any) => sum + (c.viewCount || 0), 0);
   const totalLikes = modelContent.reduce((sum: number, c: any) => sum + (c.likeCount || 0), 0);
+  const totalPieces = modelContent.length;
+  const modelDesc = model.bio
+    ? `${model.bio} — ${totalPieces} exclusive pieces including ${videoCount} videos. Book a private call or send a direct message on Forbidden Fruit.`
+    : `${model.name} on Forbidden Fruit — ${totalPieces} exclusive content pieces, ${videoCount} private videos. Available for 1-on-1 video calls and direct messaging.`;
+
+  const personSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: model.name,
+    description: modelDesc,
+    url: `https://forbiddenfruit.app/models/${model.slug}`,
+    ...(model.avatarUrl ? { image: model.avatarUrl } : {}),
+    worksFor: { "@type": "Organization", name: "Forbidden Fruit", url: "https://forbiddenfruit.app" },
+  };
 
   return (
     <div className="w-full">
+      <SEOHead
+        title={`${model.name} — Exclusive Content & Private Bookings`}
+        description={modelDesc}
+        canonical={`/models/${model.slug}`}
+        ogImage={model.avatarUrl || model.coverImageUrl || undefined}
+        ogType="profile"
+        jsonLd={personSchema}
+      />
       {/* Hero / Cover */}
       <div className="relative h-72 sm:h-96 overflow-hidden">
         {model.coverImageUrl ? (

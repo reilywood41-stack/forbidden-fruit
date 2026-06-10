@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { ProtectedRoute, useAuth } from "@/lib/auth";
+import { SEOHead } from "@/components/seo-head";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Heart, Lock, Play, Crown, Rss, User, Pin,
@@ -257,6 +258,12 @@ export default function PostsFeed() {
 
   return (
     <ProtectedRoute>
+      <SEOHead
+        title="Model Posts — Latest Updates & Exclusive Content"
+        description="Browse the latest posts from Forbidden Fruit models. Members-only photos, videos, and updates across Bronze, Silver, and Gold tiers."
+        canonical="/posts"
+        noIndex
+      />
       <div className="max-w-2xl mx-auto px-4 py-6 w-full">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { useGetContent } from "@workspace/api-client-react";
 import { ProtectedRoute, useAuth } from "@/lib/auth";
+import { SEOHead } from "@/components/seo-head";
 import { Lock, PlayCircle, Image as ImageIcon, Search, Crown, Star, Gift, Heart } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,12 @@ export default function ContentFeed() {
 
   return (
     <ProtectedRoute>
+      <SEOHead
+        title="The Vault — Exclusive Members Content"
+        description="Browse exclusive Bronze, Silver, and Gold tier content in the Forbidden Fruit Vault. HD videos, galleries, and more — members only."
+        canonical="/content"
+        noIndex
+      />
       <div className="max-w-7xl mx-auto px-4 py-6 w-full">
 
         {/* Header */}

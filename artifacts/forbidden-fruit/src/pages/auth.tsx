@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLocation, useSearch } from "wouter";
+import { SEOHead } from "@/components/seo-head";
 import { useLogin, useRegister } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
 import { Input } from "@/components/ui/input";
@@ -57,6 +58,12 @@ export default function AuthPage({ mode = "login" }: { mode?: "login" | "registe
 
   return (
     <div className="flex-1 flex items-center justify-center p-4 relative min-h-[80vh]">
+      <SEOHead
+        title={isLogin ? "Member Login" : "Join Forbidden Fruit — Create Your Account"}
+        description={isLogin ? "Sign in to your Forbidden Fruit account to access exclusive members-only content." : "Create your free Forbidden Fruit account and choose a membership tier to unlock exclusive adult content."}
+        canonical={isLogin ? "/login" : "/register"}
+        noIndex
+      />
       <div className="absolute inset-0 z-0 opacity-20 pointer-events-none">
         <img src={`${import.meta.env.BASE_URL}images/gold-texture.png`} className="w-full h-full object-cover" alt="" 
           onError={(e) => { e.currentTarget.style.display = 'none'; }} />

@@ -3,6 +3,69 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import { Crown, Lock, Star, ChevronRight, Video } from "lucide-react";
 import { useEffect } from "react";
+import { SEOHead } from "@/components/seo-head";
+
+const ORG_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Forbidden Fruit",
+  url: "https://forbiddenfruit.app",
+  description:
+    "An elite members-only adult content platform offering Bronze, Silver and Gold tier memberships with exclusive content, private video calls, and direct model access.",
+  sameAs: [],
+};
+
+const WEBSITE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Forbidden Fruit",
+  url: "https://forbiddenfruit.app",
+  description: "Elite members-only adult content platform with tiered memberships.",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: "https://forbiddenfruit.app/content?q={search_term_string}",
+    "query-input": "required name=search_term_string",
+  },
+};
+
+const FAQ_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "What is Forbidden Fruit?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Forbidden Fruit is an elite members-only adult content platform with Bronze ($10/mo), Silver ($30/mo), and Gold ($50/mo) membership tiers offering exclusive videos, galleries, private video calls, and direct model messaging.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How do I join Forbidden Fruit?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Register for a free account, then upgrade to Bronze, Silver, or Gold membership by submitting payment via CashApp, gift card, or crypto. Your membership is activated after admin review.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Can I book a private video call?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes. Silver and Gold members can book private 1-on-1 video calls with models via Telegram. Browse available models and request a booking through the Bookings page.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What payment methods are accepted?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "We accept CashApp, gift cards (Amazon, Apple, Visa, Google Play), and cryptocurrency (USDT, Bitcoin, USDC).",
+      },
+    },
+  ],
+};
 
 export default function Landing() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -18,6 +81,11 @@ export default function Landing() {
 
   return (
     <div className="flex-1 flex flex-col">
+      <SEOHead
+        canonical="/"
+        description="An elite members-only adult content platform. Choose Bronze ($10), Silver ($30), or Gold ($50) — unlock exclusive HD videos, private model video calls, and direct messaging."
+        jsonLd={[ORG_SCHEMA, WEBSITE_SCHEMA, FAQ_SCHEMA]}
+      />
       {/* Hero Section */}
       <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">

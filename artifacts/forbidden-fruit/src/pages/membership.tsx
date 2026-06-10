@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ProtectedRoute, useAuth } from "@/lib/auth";
+import { SEOHead } from "@/components/seo-head";
 import { useSubmitPayment } from "@workspace/api-client-react";
 import { Check, Crown, Shield, Loader2, Info, ChevronDown, ChevronUp, Copy, CheckCircle, Upload, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -184,6 +185,11 @@ export default function Membership() {
 
   return (
     <ProtectedRoute>
+      <SEOHead
+        title="Choose Your Membership — Bronze, Silver & Gold Tiers"
+        description="Join Forbidden Fruit's elite membership. Bronze $10/mo, Silver $30/mo, Gold $50/mo. Pay via CashApp, gift cards, or crypto. Unlock exclusive content instantly."
+        canonical="/membership"
+      />
       <div className="max-w-6xl mx-auto px-4 py-10 w-full">
         <div className="text-center mb-10">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white mb-3">Elevate Your Access</h1>
